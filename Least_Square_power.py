@@ -1,0 +1,37 @@
+import matplotlib.pyplot as plt
+import numpy as np
+def power_law(x, a, b):
+	 return a * np.power(x, b)
+def least_squares_fit(x, y):
+    n = len(x)
+    x_sum = np.sum(np.log(x))
+    y_sum = np.sum(np.log(y))
+    xy_sum = np.sum(np.log(x) * np.log(y))
+    x_squared_sum = np.sum(np.log(x) ** 2)
+    b = (n * xy_sum - x_sum * y_sum) / (n * x_squared_sum - x_sum ** 2)
+    a = np.exp((y_sum - b * x_sum) / n)
+    sigma_b_squared = (n * np.sum(np.log(y) * 2) - np.sum(np.log(y)) * 2 - (b * (n * x_squared_sum - x_sum * 2)) * 2) / (n * (n - 2))
+    sigma_a_squared = sigma_b_squared * (x_squared_sum / n)
+    sigma_a = np.sqrt(sigma_a_squared)
+    sigma_b = np.sqrt(sigma_b_squared)
+    return a, b, sigma_a, sigma_b
+x = np.array([1, 2, 3, 4, 5])
+y = np.array([2, 3, 5, 8, 12])
+a, b, sigma_a, sigma_b = least_squares_fit(x, y)
+x_fit = np.linspace(min(x), max(x), 100)
+y_fit = power_law(x_fit,a,b)
+print("Estimated parameters:")
+print("a =", a)
+print("b =", b)
+print("Uncertainties in parameters:")
+print("sigma_a =", sigma_a)
+print("sigma_b =", sigma_b)
+plt.plot(x,y,'r')
+plt.plot(x_fit,y_fit)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Power Law Fitting')
+plt.legend(labels=("experimental", "best fitted"), loc="upper right")
+plt.grid(True)
+plt.show()
+
